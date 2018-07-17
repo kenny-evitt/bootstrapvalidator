@@ -29,7 +29,12 @@ describe('emailAddress', function() {
         '"very.unusual.@.unusual.com"@example.com',
         '"very.(),:;<>[]\".VERY.\"very@\\ \"very\".unusual"@strange.example.com',
         '" "@example.org',
-        'üñîçøðé@example.com'
+        'üñîçøðé@example.com'/*,
+        ' niceandsimple@example.com',
+        'niceandsimple@example.com ',
+        ' niceandsimple@example.com ',
+        '  niceandsimple@example.com',
+        '   niceandsimple@example.com'*/
     ];
 
     var invalidEmailAddresses = [
@@ -64,6 +69,12 @@ describe('emailAddress', function() {
     var invalidMultipleEmailAddressesForCommaOrDollarSignSeparators = [
         'niceandsimple@example.com;very.common@example.com',
         'niceandsimple@example.com;very.common@example.com,a.little.lengthy.but.fine@dept.example.com'
+    ];
+
+    var validMultipleEmailAddressesForCommaAndWhitespace = [
+        'niceandsimple@example.com, very.common@example.com',
+        'niceandsimple@example.com,  very.common@example.com',
+        'niceandsimple@example.com, very.common@example.com, a.little.lengthy.but.fine@dept.example.com'
     ];
 
     it('Valid email addresses (allowMultiple=false)', function() {
@@ -170,6 +181,22 @@ describe('emailAddress', function() {
             me.$emailAddressOrAddresses.val(emailAddress);
             me.bv.validate();
             expect(me.bv.isValid()).toEqual(false);
+        });
+    });
+
+    it('Valid email addresses (allowMultiple=true,separatorRegex=/,\s*/)', function() {
+        var me = this;
+        me.bv.updateOption('email-address-or-addresses', 'emailAddress', 'allowMultiple', true);
+        me.bv.updateOption('email-address-or-addresses', 'emailAddress', 'separatorRegex', /,\s*/);
+
+        var addresses = validEmailAddresses
+            .concat(validMultipleEmailAddressesForCommaAndWhitespace);
+
+        $.each(addresses, function(index, emailAddress) {
+            me.bv.resetForm();
+            me.$emailAddressOrAddresses.val(emailAddress);
+            me.bv.validate();
+            expect(me.bv.isValid()).toBeTruthy();
         });
     });
 });
